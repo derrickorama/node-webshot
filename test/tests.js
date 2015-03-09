@@ -438,6 +438,24 @@ describe('Handling miscellaneous options', function() {
       });
     });
   });
+
+  it('executes PhantomJS page callbacks in the same context as the PhantomJS script', function (done) {
+    var options = {
+      onResourceRequested: function (requestData, networkRequest) {
+        // Thumbnail will not be generated if calling abort doesn't work
+        networkRequest.abort();
+      }
+    };
+
+    this.timeout(20000);
+
+    webshot('google.com', testPNG, options, function(err) {
+      fs.exists(testPNG, function(exists) {
+        exists.should.equal(false);
+        done();
+      });
+    });
+  });
 });
 
 afterEach(function(done) {
